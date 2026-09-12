@@ -13,6 +13,9 @@ jobs:
       - name: Checkout RootHideManagerApp
         uses: actions/checkout@v4
 
+      - name: Install dependencies
+        run: brew install ldid
+
       - name: Install Theos (roothide)
         run: |
           git clone --recursive https://github.com/roothide/theos.git $THEOS
