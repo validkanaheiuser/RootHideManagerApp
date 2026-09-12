@@ -41,21 +41,3 @@ jobs:
           path: ${{ steps.find_deb.outputs.path }}
           retention-days: 30
 
-      - name: Update roothideapp.deb in Dopamine fork
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-          git clone \
-            https://x-access-token:${{ secrets.DOPAMINE_TOKEN }}@github.com/validkanaheiuser/Dopamine2-roothide.git \
-            dopamine-repo
-
-          cp "${{ steps.find_deb.outputs.path }}" \
-             dopamine-repo/Application/Dopamine/Resources/roothideapp.deb
-
-          cd dopamine-repo
-          git add Application/Dopamine/Resources/roothideapp.deb
-          git commit -m "chore: update roothideapp.deb (bshield badge)
-
-Built from validkanaheiuser/RootHideManagerApp@${{ github.sha }}"
-          git push origin v2.4.9.x
