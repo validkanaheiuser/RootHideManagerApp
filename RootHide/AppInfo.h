@@ -37,6 +37,7 @@
 @property (nonatomic,readonly) NSArray<LSPlugInKitProxy *> *plugInKitPlugins;
 
 @property (nonatomic, readonly) BOOL isHiddenApp;
+@property (nonatomic, readonly) BOOL hasBlueshield;
 
 + (instancetype)appWithPrivateProxy:(id)privateProxy;
 + (instancetype)appWithBundleIdentifier:(NSString*)bundleIdentifier;

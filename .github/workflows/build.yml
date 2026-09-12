@@ -1,0 +1,61 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout RootHideManagerApp
+        uses: actions/checkout@v4
+
+      - name: Install Theos (roothide)
+        run: |
+          git clone --recursive https://github.com/roothide/theos.git $THEOS
+          # Install iOS SDK (required by Theos xcodeproj.mk)
+          curl -LO https://github.com/theos/sdks/releases/latest/download/iPhoneOS16.5.sdk.tar.xz
+          tar -xf iPhoneOS16.5.sdk.tar.xz -C $THEOS/sdks
+        env:
+          THEOS: ${{ github.workspace }}/theos
+
+      - name: Build .deb
+        run: make package FINALPACKAGE=1
+        env:
+          THEOS: ${{ github.workspace }}/theos
+
+      - name: Find built .deb
+        id: find_deb
+        run: |
+          DEB=$(ls packages/*.deb | head -1)
+          echo "path=$DEB" >> $GITHUB_OUTPUT
+          echo "name=$(basename $DEB)" >> $GITHUB_OUTPUT
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.find_deb.outputs.name }}
+          path: ${{ steps.find_deb.outputs.path }}
+          retention-days: 30
+
+      - name: Update roothideapp.deb in Dopamine fork
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          git clone \
+            https://x-access-token:${{ secrets.DOPAMINE_TOKEN }}@github.com/validkanaheiuser/Dopamine2-roothide.git \
+            dopamine-repo
+
+          cp "${{ steps.find_deb.outputs.path }}" \
+             dopamine-repo/Application/Dopamine/Resources/roothideapp.deb
+
+          cd dopamine-repo
+          git add Application/Dopamine/Resources/roothideapp.deb
+          git commit -m "chore: update roothideapp.deb (bshield badge)
+
+Built from validkanaheiuser/RootHideManagerApp@${{ github.sha }}"
+          git push origin v2.4.9.x

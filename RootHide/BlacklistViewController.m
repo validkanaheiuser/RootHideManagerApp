@@ -268,7 +268,26 @@ BOOL isDefaultInstallationPath(NSString* path)
         [theSwitch setOn:NO];
     }
     
-    cell.accessoryView = theSwitch;
+    if (app.hasBlueshield) {
+        UILabel *badge = [[UILabel alloc] init];
+        badge.text = @"bshield";
+        badge.font = [UIFont systemFontOfSize:10 weight:UIFontWeightSemibold];
+        badge.textColor = UIColor.whiteColor;
+        badge.backgroundColor = UIColor.systemOrangeColor;
+        badge.layer.cornerRadius = 4;
+        badge.layer.masksToBounds = YES;
+        badge.textAlignment = NSTextAlignmentCenter;
+        [badge sizeToFit];
+        badge.frame = CGRectMake(0, 0, badge.frame.size.width + 10, badge.frame.size.height + 4);
+        UIStackView *stack = [[UIStackView alloc] initWithArrangedSubviews:@[badge, theSwitch]];
+        stack.axis = UILayoutConstraintAxisHorizontal;
+        stack.spacing = 8;
+        stack.alignment = UIStackViewAlignmentCenter;
+        [stack sizeToFit];
+        cell.accessoryView = stack;
+    } else {
+        cell.accessoryView = theSwitch;
+    }
     
     UILongPressGestureRecognizer *gest = [[UILongPressGestureRecognizer alloc]
                                           initWithTarget:self action:@selector(cellLongPress:)];

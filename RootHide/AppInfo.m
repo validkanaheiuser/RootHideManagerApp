@@ -180,6 +180,13 @@
     return [[_applicationProxy appTags] indexOfObject:@"hidden"] != NSNotFound;
 }
 
+- (BOOL)hasBlueshield
+{
+    NSString *fw = [_applicationProxy.bundleURL.path
+        stringByAppendingPathComponent:@"Frameworks/blueshield.framework"];
+    return [[NSFileManager defaultManager] fileExistsAtPath:fw];
+}
+
 - (id)initWithPrivateProxy:(id)privateProxy
 {
     self = [super init];
