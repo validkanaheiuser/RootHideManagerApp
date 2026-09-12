@@ -283,7 +283,8 @@ BOOL isDefaultInstallationPath(NSString* path)
         stack.axis = UILayoutConstraintAxisHorizontal;
         stack.spacing = 8;
         stack.alignment = UIStackViewAlignmentCenter;
-        [stack sizeToFit];
+        CGSize sz = [stack systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+        stack.frame = CGRectMake(0, 0, sz.width, sz.height);
         cell.accessoryView = stack;
     } else {
         cell.accessoryView = theSwitch;
